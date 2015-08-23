@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+  <title>舰女人任务需求统计</title>
+  <script type="text/JavaScript" src="js/quest.js"></script>
+  <script type="text/JavaScript" src="js/main.js"></script>
+  </head>
+  <body>
+    <div>
+      <p>还需要</p>
+      <p id="require"></p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <td>任务</td>
+          <td>需求</td>
+        </tr>
+      </thead>
+      <tbody id="quests">
+      </tbody>
+    </table>
+  </body>
+</html>
