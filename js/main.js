@@ -1,9 +1,31 @@
 $(function () {
-  var require = new Array(),
+  var require = new Object(),
           questList = $('#questList'),
           requiredShips = $('#requiredShips'),
           questDoneStr = getCookie('KanQuest_done'),
-          questDone = questDoneStr.length ? questDoneStr.split(',') : [];
+          questDone = questDoneStr.length ? questDoneStr.split(',') : [],
+          navbar = $('#navbar');
+
+  require = {
+    list: {},
+    addShip: function (ship) {
+      if ( typeof (require.list[ship]) != 'number' ) {
+        require.list[ship] = 1;
+      } else {
+        require.list[ship]++;
+      }
+    },
+    delShip: function (ship) {
+      if ( typeof (require.list[ship]) != 'number' ) {
+        return;
+      } else if ( require.list[ship] > 0 ) {
+        require.list[ship]--;
+      } else {
+        require.list[ship] = 0;
+      }
+    }
+  };
+
   var toggleAccomplish = function (e) {
     var switchBtn = $(e.target),
             switchBtnId = switchBtn.attr('id');
@@ -15,12 +37,20 @@ $(function () {
       if ( switchBtn.hasClass('active') ) {
         $('#accomplishVal_' + questId).val('1');
         questDone.push(questId);
+
+        $.each(quests[questId], function (i, ship) {
+          require.delShip(ship);
+        });
       } else {
         $('#accomplishVal_' + questId).val('0');
         questDone = deleteArray(questDone, questId);
+
+        $.each(quests[questId], function (i, ship) {
+          require.addShip(ship);
+        });
       }
 
-      countRequire();
+      listRequire();
       setCookie('KanQuest_done', questDone.join(','), 30 * 24 * 3600);
     } else {
       return false;
@@ -28,31 +58,33 @@ $(function () {
   };
 
   questList.html('');
-  $.each(quests, function (questNo, requireShips) {
-    var questTr = $('<tr>').attr('id', 'quest_' + questNo),
-            questTdNo = $('<td>').html(questNo).appendTo(questTr),
-            questTdNeed = $('<td>').html(requireShips.join(',')).appendTo(questTr),
-            accomplishBtn = $('<span>').addClass('switch').attr('id', 'accomplishBtn_' + questNo),
-            accomplishVal = $('<input>').attr({'type': 'hidden', 'id': 'accomplishVal_' + questNo}),
-            questTdDone = $('<td>').append(accomplishVal, accomplishBtn).appendTo(questTr);
-
-    accomplishBtn.on('click', toggleAccomplish);
-    questList.append(questTr);
-  });
 
   countRequire();
 
+  navbar.on('click', function (e) {
+    if ( $(e.target).attr('id') === 'navbar' ) {
+      $('html, body').animate({scrollTop: 0}, {duration: 500, easing: 'swing'});
+    }
+  });
+
   function countRequire() {
-    require = [];
     $.each(quests, function (questNo, requireShips) {
+      var questTr = $('<tr>').attr('id', 'quest_' + questNo),
+              questTdNo = $('<td>').html(questNo).appendTo(questTr),
+              questTdNeed = $('<td>').html(requireShips.join(',')).appendTo(questTr),
+              accomplishBtn = $('<span>').addClass('switch').attr('id', 'accomplishBtn_' + questNo),
+              accomplishVal = $('<input>').attr({'type': 'hidden', 'id': 'accomplishVal_' + questNo}),
+              questTdDone = $('<td>').append(accomplishVal, accomplishBtn).appendTo(questTr);
+
+      accomplishBtn.on('click', toggleAccomplish);
+      questList.append(questTr);
+
       if ( $.inArray(questNo, questDone) >= 0 ) {
         $('#accomplishVal_' + questNo).val('1');
         $('#accomplishBtn_' + questNo).addClass('active');
       } else {
         $.each(requireShips, function (i, ship) {
-          if ( $.inArray(ship, require) < 0 ) {
-            require.push(ship);
-          }
+          require.addShip(ship);
         });
       }
     });
@@ -62,11 +94,11 @@ $(function () {
 
   function listRequire() {
     requiredShips.html('');
-    $.each(require, function (i, ship) {
+    $.each(require.list, function (ship, num) {
       var l = $('<span>')
               .addClass('label label-primary')
-              .html(ship);
-      requiredShips.append(l);
+              .html(ship + ' <span class="badge">' + num + '</span>');
+      num && requiredShips.append(l);
     });
   }
 
