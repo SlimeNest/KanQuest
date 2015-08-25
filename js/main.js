@@ -3,7 +3,8 @@ $(function () {
           questList = $('#questList'),
           requiredShips = $('#requiredShips'),
           questDoneStr = getCookie('KanQuest_done'),
-          questDone = questDoneStr.length ? questDoneStr.split(',') : [];
+          questDone = questDoneStr.length ? questDoneStr.split(',') : [],
+          navbar = $('#navbar');
 
   require = {
     list: {},
@@ -36,15 +37,15 @@ $(function () {
       if ( switchBtn.hasClass('active') ) {
         $('#accomplishVal_' + questId).val('1');
         questDone.push(questId);
-        
-        $.each(quests[questId], function(i, ship){
+
+        $.each(quests[questId], function (i, ship) {
           require.delShip(ship);
         });
       } else {
         $('#accomplishVal_' + questId).val('0');
         questDone = deleteArray(questDone, questId);
-        
-        $.each(quests[questId], function(i, ship){
+
+        $.each(quests[questId], function (i, ship) {
           require.addShip(ship);
         });
       }
@@ -59,6 +60,12 @@ $(function () {
   questList.html('');
 
   countRequire();
+
+  navbar.on('click', function (e) {
+    if ( $(e.target).attr('id') === 'navbar' ) {
+      $('html, body').animate({scrollTop: 0}, {duration: 500, easing: 'swing'});
+    }
+  });
 
   function countRequire() {
     $.each(quests, function (questNo, requireShips) {
