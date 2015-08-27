@@ -51,7 +51,7 @@ $(function () {
       }
 
       listRequire();
-      setCookie('KanQuest_done', questDone.join(','), 30 * 24 * 3600);
+      setCookie('KanQuest_done', questDone.join(','), 30);
     } else {
       return false;
     }
