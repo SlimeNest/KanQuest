@@ -72,7 +72,7 @@ $(function () {
       var questTr = $('<tr>').attr('id', 'quest_' + questId),
               questTdId = $('<td>').html(questId).appendTo(questTr),
               questTdTitle = $('<td>').html(detail.title).appendTo(questTr),
-              questTdDesc = $('<td>').html(detail.desc).appendTo(questTr),
+              questTdDesc = $('<td>').addClass('hidden-xs').html(detail.desc).appendTo(questTr),
               questTdNeed = $('<td>').html(detail.ship.join(',')).appendTo(questTr),
               accomplishBtn = $('<span>').addClass('switch').attr('id', 'accomplishBtn_' + questId),
               accomplishVal = $('<input>').attr({'type': 'hidden', 'id': 'accomplishVal_' + questId}),
