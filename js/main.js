@@ -38,20 +38,20 @@ $(function () {
         $('#accomplishVal_' + questId).val('1');
         questDone.push(questId);
 
-        $.each(quests[questId], function (i, ship) {
+        $.each(quests[questId]['ship'], function (i, ship) {
           require.delShip(ship);
         });
       } else {
         $('#accomplishVal_' + questId).val('0');
         questDone = deleteArray(questDone, questId);
 
-        $.each(quests[questId], function (i, ship) {
+        $.each(quests[questId]['ship'], function (i, ship) {
           require.addShip(ship);
         });
       }
 
       listRequire();
-      setCookie('KanQuest_done', questDone.join(','), 30 * 24 * 3600);
+      setCookie('KanQuest_done', questDone.join(','), 30);
     } else {
       return false;
     }
@@ -68,22 +68,24 @@ $(function () {
   });
 
   function countRequire() {
-    $.each(quests, function (questNo, requireShips) {
-      var questTr = $('<tr>').attr('id', 'quest_' + questNo),
-              questTdNo = $('<td>').html(questNo).appendTo(questTr),
-              questTdNeed = $('<td>').html(requireShips.join(',')).appendTo(questTr),
-              accomplishBtn = $('<span>').addClass('switch').attr('id', 'accomplishBtn_' + questNo),
-              accomplishVal = $('<input>').attr({'type': 'hidden', 'id': 'accomplishVal_' + questNo}),
+    $.each(quests, function (questId, detail) {
+      var questTr = $('<tr>').attr('id', 'quest_' + questId),
+              questTdId = $('<td>').html(questId).appendTo(questTr),
+              questTdTitle = $('<td>').html(detail.title).appendTo(questTr),
+              questTdDesc = $('<td>').html(detail.desc).appendTo(questTr),
+              questTdNeed = $('<td>').html(detail.ship.join(',')).appendTo(questTr),
+              accomplishBtn = $('<span>').addClass('switch').attr('id', 'accomplishBtn_' + questId),
+              accomplishVal = $('<input>').attr({'type': 'hidden', 'id': 'accomplishVal_' + questId}),
               questTdDone = $('<td>').append(accomplishVal, accomplishBtn).appendTo(questTr);
 
       accomplishBtn.on('click', toggleAccomplish);
       questList.append(questTr);
 
-      if ( $.inArray(questNo, questDone) >= 0 ) {
-        $('#accomplishVal_' + questNo).val('1');
-        $('#accomplishBtn_' + questNo).addClass('active');
+      if ( $.inArray(questId, questDone) >= 0 ) {
+        $('#accomplishVal_' + questId).val('1');
+        $('#accomplishBtn_' + questId).addClass('active');
       } else {
-        $.each(requireShips, function (i, ship) {
+        $.each(detail.ship, function (i, ship) {
           require.addShip(ship);
         });
       }
